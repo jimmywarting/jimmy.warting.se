@@ -1,0 +1,51 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Document</title>
+</head>
+<body>
+    <form id="$form">
+        <label>
+          <input type="checkbox" id="$multiple">
+          multiple (chrome 78)
+        <br></label>
+        <label>
+          <input type="checkbox" name="name">
+          name (chrome 78)
+        <br></label>
+          <label>
+          <input type="checkbox" name="email">
+          email (chrome 78)
+        <br></label>
+          <label>
+          <input type="checkbox" name="tel">
+          tel (chrome 78)
+        <br></label>
+          <label>
+          <input type="checkbox" name="icon">
+          icon (chrome 80)
+        <br></label></label>
+          <label>
+          <input type="checkbox" name="address">
+          address (chrome 80)
+        <br></label>
+        
+        <input type="submit">
+    </form>
+
+    <script>
+    $form.onsubmit = async evt => {
+        evt.preventDefault()
+        const fd = new FormData(evt.target)
+        const fields = [...fd].map(e => e[0])
+        const contacts = await navigator.contacts.select(fields, {
+            multiple: $multiple.checked
+        })
+        
+        alert(JSON.stringify(contacts, null, 2))
+    }
+    </script>
+</body>
+</html>
