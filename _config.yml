@@ -1,1 +1,70 @@
-theme: jekyll-theme-tactile
+title: Endless
+author:
+  name: Jimmy Wärting
+  email: jimmy@warting.se
+description: > # this means to ignore newlines until "show_excerpts:"
+  I code, I like p2p, anything that has to do with ipfs, webtorrent and webrtc.
+  decentralizing the web is grate. Serverless can also be cool.
+
+
+show_excerpts: false # set to true to show excerpts on the homepage
+
+# Disqus Comments
+disqus:
+    # Leave shortname blank to disable comments site-wide.
+    # Disable comments for any post by adding `comments: false` to that post's YAML Front Matter.
+    shortname: jimmywarting
+
+url: https://jimmy.warting.se
+
+google_analytics: UA-29991469-1
+
+# refer to https://shopify.github.io/liquid/filters/date/ if you want to customize this
+minima:
+  date_format: " %-d %b, %Y"
+
+  # skin: dark
+
+  # generate social links in footer
+  social_links:
+    github:  jimmywarting
+    stackoverflow: "1008999"
+    linkedin: jimmywarting
+    # dribbble: jekyll
+    # facebook: jekyll
+    # flickr:   jekyll
+    # instagram: jekyll
+    # pinterest: jekyll
+    # youtube: jekyll
+    # youtube_channel: UC8CXR0-3I70i1tfPg1PAE1g
+    # youtube_channel_name: CloudCannon
+    # telegram: jekyll
+    # googleplus: +jekyll
+    # microdotblog: jekyll
+    # keybase: jekyll
+
+    # Mastodon instances
+    # mastodon:
+    # - username: jekyll
+    #   instance: example.com
+    # - username: jekyll2
+    #   instance: example.com
+
+    # GitLab instances
+    # gitlab:
+    # - username: jekyll
+    #   instance: example.com
+    # - username: jekyll2
+    #   instance: example.com
+
+# If you want to link only specific pages in your header, uncomment
+# this and add the path to the pages in order as they should show up
+#header_pages:
+# - about.md
+
+# Build settings
+theme: minima
+
+# plugins:
+#  - jekyll-feed
+#  - jekyll-seo-tag

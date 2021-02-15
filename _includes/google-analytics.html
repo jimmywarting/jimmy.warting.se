@@ -1,0 +1,17 @@
+<script>
+  if (!(
+    window.doNotTrack === "1" ||
+    navigator.doNotTrack === "1" ||
+    navigator.doNotTrack === "yes" ||
+    navigator.msDoNotTrack === "1"
+  )) {
+    var d = document, s = d.createElement('script')
+    s.async = true
+    s.src = 'https://www.googletagmanager.com/gtag/js?id={{ site.google_analytics }}'
+    d.currentScript.replaceWith(s)
+    window.dataLayer = window.dataLayer || [];
+    function gtag(){dataLayer.push(arguments);}
+    gtag('js', new Date());
+    gtag('config', '{{ site.google_analytics }}');
+  }
+</script>
