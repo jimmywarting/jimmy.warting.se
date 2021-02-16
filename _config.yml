@@ -3,11 +3,18 @@ author:
   name: Jimmy Wärting
   email: jimmy@warting.se
 description: > # this means to ignore newlines until "show_excerpts:"
-  I code, I like p2p, anything that has to do with ipfs, webtorrent and webrtc.
+  I code, I like p2p, anything that has to do with IPFS, WebTorrent and WebRTC.
   decentralizing the web is grate. Serverless can also be cool.
 
 
 show_excerpts: false # set to true to show excerpts on the homepage
+
+markdown: kramdown
+kramdown:
+    highlighter: rouge
+    syntax_highlighter_opts:
+        block:
+            line_numbers: true
 
 # Disqus Comments
 disqus:
