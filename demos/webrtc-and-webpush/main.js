@@ -57,7 +57,7 @@ callButton.onclick = async () => {
   }
 
   const friendsSubscription = prompt(
-    'Who would you like to call?',
+    'Who would you like to call? enters someones Push Subscription',
     sessionStorage.lastSubscription
   )
 
