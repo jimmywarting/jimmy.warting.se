@@ -250,6 +250,31 @@ blockquote i, blockquote em {
 	font-style: normal;
 }
 
+
+
+/**
+ * Tags
+ */
+.tags {
+  list-style: none;
+  margin: 0;
+  padding: 0;
+  overflow: hidden;
+	display: inline;
+}
+
+.tags li {
+	display: inline-block;
+	margin-left: 10px;
+}
+
+.tags a:before {
+  /* color: #999999; */
+}
+.tags a {
+  color: #999999;
+}
+
 /**
  * Code formatting
  */
@@ -593,6 +618,12 @@ table td {
 .post-meta {
 	font-size: 14px;
 	color: #999999;
+}
+
+.post .post-header .post-meta {
+	border: solid;
+	border-width: 1px 0px 1px 0px;
+	padding: 6px 0;
 }
 
 .post-link {
