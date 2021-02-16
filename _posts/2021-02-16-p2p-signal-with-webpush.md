@@ -1,7 +1,7 @@
 ---
 layout: post
 title: "Establish WebRTC connection without a signaling server using nothing but Web Push"
-categories: p2p
+tags: p2p WebRTC WebPush
 ---
 
 Serverless technologies are great. And when you need to chat/talk to one or another, then you can do so directly with WebRTC. But what sucks is that you have to signal offer & answers back and forth using a server.
