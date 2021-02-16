@@ -10,6 +10,14 @@
     {%- include google-analytics.html -%}
   {%- endif -%}
 
-  {%- include custom-head.html -%}
+  <script>
+    window.globalThis = window
+    navigator.serviceWorker.ready.then(() => {
+      if (navigator.serviceWorker.controller === null) {
+        registration.active.postMessage('claimMe')
+      }
+    })
+    document.currentScript.remove()
+  </script>
 
 </head>
