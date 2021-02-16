@@ -6,6 +6,7 @@ categories: p2p
 
 Serverless technologies are great. And when you need to chat/talk to one or another, then you can do so directly with WebRTC. But what sucks is that you have to signal offer & answers back and forth using a server.
 
+
 Imagine if you didn't have to use a server or some external third party WebSocket service? This is what I have attempted to solve using nothing but Web Push as a signaling technique.
 
 <details>
