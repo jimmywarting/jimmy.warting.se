@@ -11,23 +11,24 @@ Imagine if you didn't have to use a server or some external third party WebSocke
 <details>
   <summary>What I will go through</summary>
   <blockquote><ul>
-    <li>How you can use Web Push as a kind of "phone number" that you can "call" too
-    <li>Setting up Service Worker to listen to push messages and broadcast them to all open tabs
-    <li>Generating a VAPID public/private key
-    <li>Using the keys to subscribe and encrypt payloads
+    <li>How you can use Web Push as a kind of "phone number" that you can "call" too</li>
+    <li>Setting up Service Worker to listen to push messages and broadcast them to all open tabs</li>
+    <li>Generating a VAPID public/private key</li>
+    <li>Using the keys to subscribe and encrypt payloads</li>
   </ul></blockquote>
 </details>
 
 <details>
   <summary>What I won't be cover</summary>
   <blockquote><ul>
-    <li>How to best request for notification permission and dealing with rejection.
-    <li>How to get the other person's subscription
-    <li>Having an "answer" or "hang up" option to choose from.
-    <li>Showing any desktop notification and reacting to click event. (Yes, we are going to send silent push)
-    <li>Or how to forward the push payload to the correct tab that is setting up the WebRTC peer connection
-    <li>In this case it will be best that you only have one tab open on two browsers.
+    <li>How to best request for notification permission and dealing with rejection.</li>
+    <li>How to get the other person's subscription</li>
+    <li>Having an "answer" or "hang up" option to choose from.</li>
+    <li>Showing any desktop notification and reacting to click event. (Yes, we are going to send silent push)</li>
+    <li>Or how to forward the push payload to the correct tab that is setting up the WebRTC peer connection</li>
+    <li>In this case it will be best that you only have one tab open on two browsers.</li>
   </ul>
+  
   This will mostly just only focus on just establish a p2p connection with WebRTC
   </blockquote>
 </details>
