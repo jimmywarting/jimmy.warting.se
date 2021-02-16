@@ -9,12 +9,12 @@ description: > # this means to ignore newlines until "show_excerpts:"
 
 show_excerpts: false # set to true to show excerpts on the homepage
 
-markdown: kramdown
-kramdown:
-    highlighter: rouge
-    syntax_highlighter_opts:
-        block:
-            line_numbers: true
+# markdown: kramdown
+# kramdown:
+#     highlighter: rouge
+#     syntax_highlighter_opts:
+#         block:
+#             line_numbers: true
 
 # Disqus Comments
 disqus:
