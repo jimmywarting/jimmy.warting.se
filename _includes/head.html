@@ -12,7 +12,7 @@
 
   <script>
     window.globalThis = window
-    navigator.serviceWorker.ready.then(() => {
+    navigator.serviceWorker.ready.then(registration => {
       if (navigator.serviceWorker.controller === null) {
         registration.active.postMessage('claimMe')
       }
