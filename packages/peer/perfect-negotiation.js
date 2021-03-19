@@ -44,16 +44,18 @@ export default class Peer {
     this.polite = polite
     this.signalingPort = port1
 
-    dc.addEventListener('open', () => {
-      // At this point we start to trickle over datachannel instead
-      // we also close the message channel as we do not need it anymore
-      trickle = true
-      send = (msg) => dc.send(JSON.stringify(msg))
-      port1.close()
-      port2.close()
-      port2 = port1 = port2.onmessage = null
-    }, { once: true, ...signal })
-    /** @type {any} */
+    this.ready = new Promise((rs) => {
+      dc.addEventListener('open', () => {
+        // At this point we start to trickle over datachannel instead
+        // we also close the message channel as we do not need it anymore
+        trickle = true
+        send = (msg) => dc.send(JSON.stringify(msg))
+        port1.close()
+        port2.close()
+        this.ready = port2 = port1 = port2.onmessage = null
+        rs()
+      }, { once: true, ...signal })
+    })
 
 
     pc.addEventListener('icecandidate', ({ candidate }) => {
