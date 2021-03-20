@@ -34,13 +34,27 @@ export default class Peer {
       }]
     })
 
+    const ctrl = new AbortController()
+    
     /** @type {any} dummy alias for AbortSignal to make TS happy */
-    const signal = { signal: options?.signal }
+    const signal = { signal: ctrl.signal }
+
+    pc.addEventListener('iceconnectionstatechange', () => {
+      if (
+        pc.iceConnectionState == 'disconnected' ||
+        pc.iceConnectionState === 'failed'
+      ) {
+        ctrl.abort()
+      }
+    }, signal)
+
+
 
     const dc = pc.createDataChannel('both', { negotiated: true, id: 0 })
 
     this.pc = pc
     this.dc = dc
+    this.signal = ctrl.signal
     this.polite = polite
     this.signalingPort = port1
 
