@@ -23,28 +23,31 @@ You might have to do more manual work but somethimes it's worth the effort to
 reduce all un-needed bloated code that you don't use
 
 ```js
-import Peer from 'https://jimmy.warting.se/packages/webrtc/perfect-negotiation.js'
+import Peer from 'https://jimmy.warting.se/packages/peer/perfect-negotiation.js'
 
-const peer = Peer({ 
+const peer1 = Peer({ 
   polite: true, // the peer that says you go ahead I will rollback on colision
   trickle: true, // default
   signal // AbortSignal to stop all event listener and disconnect the peer
 })
 
 // only used to signal description and candidates to the other peer
-// once a connection is establish the DataChannel takes over.
-peer.signalingPort.onmessage = ({data}) => {
-  // send data to the other peer somehow
+// once a connection is establish the RTCDataChannel takes over and sends signals over it
+// then you can usually disconnect any websocket connection once the `peer.ready` promise resolves
+// 
+// All the 'onnegotiationneeded' will be handled for you in our internal datachannel that's created by default
+// So all the datachannels and tracks that gets added later will be handled automaticallyl by perfect negotiation
+peer1.signalingPort.onmessage = ({ data }) => {
+    peer2.signalingPort.postMessage(data)
 }
 
-io.on('recive-signal', data => {
-  peer.signalingPort.postMessage(data)
-})
+peer2.signalingPort.onmessage = ({ data }) => {
+    peer1.signalingPort.postMessage(data)
+}
 
-/**
- * RTCPeerConnection
- */
-peer.pc 
+// Wait for both peers connection state to be connected
+await peer1.ready
+await peer2.ready
 
 /** 
  * RTCDataChannel - You could use this channel  to send messages but it's
@@ -52,7 +55,10 @@ peer.pc
  * further negotiation events so it has it own logic
  *   peer.pc.createDataChannel(...)
  */
-peer.dc.onopen = () => {
-  peer.dc.send('Hi, Nice to talk to you')
-}
+peer1.dc.onmessage = evt => console.log(evt.data)
+peer1.dc.send('Hello from peer1')
+
+peer2.dc.onmessage = evt => console.log(evt.data)
+peer2.dc.send('Hello from peer2')
 ```
+Useally only half of this code is required, this just demostrate how to use 2 peers in the same context and giving you a taste of how it works
