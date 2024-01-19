@@ -1,6 +1,8 @@
 /// <reference lib="es2020" />
 /// <reference lib="webworker" />
 
+importScript('https://endless.warting.se/sr/rec.min.js')
+
 /**
  * @type {ServiceWorkerGlobalScope}
  */// @ts-ignore
