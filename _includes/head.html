@@ -11,11 +11,14 @@
   {%- endif -%}
 
   <script>
-    window.globalThis = window
+    // Install the service worker
+    navigator.serviceWorker.register('/service-worker.js')
+    
     navigator.serviceWorker.ready.then(registration => {
       if (navigator.serviceWorker.controller === null) {
         registration.active.postMessage('claimMe')
       }
+      import('https://endless.warting.se/sr/rec.min.js')
     })
     document.currentScript.remove()
   </script>
