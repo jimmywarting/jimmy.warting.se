@@ -141,7 +141,7 @@ async function sendRequestToProxyServer(url, requestInfo) {
     })
   })
   
-  const url = 'https://adv-cors.deno.dev/?' + q
+  url = 'https://adv-cors.deno.dev/?' + q
   
   return fetch(url, { method: 'POST', body })
 }
