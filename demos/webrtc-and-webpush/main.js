@@ -134,20 +134,16 @@ async function sendPushMessage (subscription, text) {
 }
 
 async function sendRequestToProxyServer(url, requestInfo) {
-  const fetchOptions = { method: 'post' }
-  delete requestInfo.method
-  requestInfo.endpoint = url
-
-  // Can't send binary as needed for web push protocol,
-  // so needs to convert it to base64 here and the
-  // server will convert back
-  if (requestInfo.body && requestInfo.body instanceof ArrayBuffer) {
-    requestInfo.body = btoa(String.fromCharCode(...new Uint8Array(requestInfo.body)))
-    fetchOptions.body = requestInfo
-  }
-
-  fetchOptions.body = JSON.stringify(requestInfo)
-  return fetch(`https://simple-push-demo.appspot.com/api/v2/sendpush`, fetchOptions)
+  const q = new URLSearchParams({
+    cors: JSON.stringify({
+      url,
+      headers
+    })
+  })
+  
+  const url = 'https://adv-cors.deno.dev/?' + q
+  
+  return fetch(url, { method: 'POST', body })
 }
 
 
