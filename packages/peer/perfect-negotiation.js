@@ -1,7 +1,21 @@
-function waitToCompleteIceGathering(pc, state = pc.iceGatheringState) {
-  return state !== 'complete' && new Promise(resolve => {
-    pc.addEventListener('icegatheringstatechange', () => (pc.iceGatheringState === 'complete') && resolve())
-  })
+function waitToCompleteIceGathering(pc, eventOptions, state = pc.iceGatheringState) {
+  if (state === 'complete') return
+  const ctrl = new AbortController()
+  const signals = AbortSignal.any([ eventOptions.signal, ctrl.signal ])
+  const q = Promise.withResolvers()
+  const completed = Symbol('completed')
+
+  pc.addEventListener('icegatheringstatechange', () => {
+    if (pc.iceGatheringState === 'complete') {
+      ctrl.abort(completed)
+    }
+  }, { signal: signals })
+
+  signals.addEventListener('abort', evt => {
+    evt.reason === completed ? q.resolve() : q.reject(evt.reason)
+  }, { once: true })
+
+  return q.promise
 }
 
 /**
@@ -9,7 +23,7 @@ function waitToCompleteIceGathering(pc, state = pc.iceGatheringState) {
  * @property {AbortSignal} signal - funkis?
  */
 
-export default class Peer {
+class Peer {
   /**
    * @param {{
    *   polite: boolean,
@@ -37,7 +51,7 @@ export default class Peer {
     const ctrl = new AbortController()
     
     /** @type {any} dummy alias for AbortSignal to make TS happy */
-    const signal = { signal: ctrl.signal }
+    const eventOptions = { signal: ctrl.signal }
 
     pc.addEventListener('iceconnectionstatechange', () => {
       if (
@@ -46,9 +60,7 @@ export default class Peer {
       ) {
         ctrl.abort()
       }
-    }, signal)
-
-
+    }, eventOptions)
 
     const dc = pc.createDataChannel('both', { negotiated: true, id: 0 })
 
@@ -66,15 +78,14 @@ export default class Peer {
         send = (msg) => dc.send(JSON.stringify(msg))
         port1.close()
         port2.close()
-        this.ready = port2 = port1 = port2.onmessage = null
+        port2 = port1 = port2.onmessage = null
         rs()
-      }, { once: true, ...signal })
+      }, { once: true, ...eventOptions })
     })
-
 
     pc.addEventListener('icecandidate', ({ candidate }) => {
       trickle && send({ candidate })
-    }, {...signal})
+    }, eventOptions)
 
     // The rest is the polite peer negotiation logic, copied from this blog
 
@@ -89,23 +100,20 @@ export default class Peer {
       if (trickle) {
         send({ description: pc.localDescription })
       } else {
-        await waitToCompleteIceGathering(pc)
+        await waitToCompleteIceGathering(pc, eventOptions)
         const description = pc.localDescription.toJSON()
-        description.sdp = description.sdp.replace(/a=ice-options:trickle\s\n/g, '')
+        description.sdp = description.sdp.replace(/a=ice-options:trickle.*\r?\n/g, '')
         send({ description })
       }
-    }, { ...signal })
+    }, eventOptions)
 
-    async function onmessage ({ data }) {
+    const onmessage = async ({ data }) => {
       if (typeof data === 'string' && (data.includes('"description"') || data.includes('"candidate"'))) {
-        try { data = JSON.parse(data) } catch (err) { }
+        try { data = JSON.parse(data) } catch (_err) {/**/}
       }
-      const { description, candidate } = typeof data === 'string' ? JSON.parse(data) : data
-
+      
       if (data?.description) {
-        const description = data.description
-
-        const offerCollision = description.type == 'offer' &&
+        const offerCollision = data.description.type == 'offer' &&
           (makingOffer || pc.signalingState != 'stable')
 
         ignoreOffer = !this.polite && offerCollision
@@ -116,18 +124,16 @@ export default class Peer {
         if (offerCollision) {
           await Promise.all([
             pc.setLocalDescription({ type: 'rollback' }),
-            pc.setRemoteDescription(description)
+            pc.setRemoteDescription(data.description)
           ])
         } else {
-          try {
-            description.type === 'answer' && pc.signalingState === 'stable' ||
-              await pc.setRemoteDescription(description)
-          } catch (err) { }
+            data.description.type === 'answer' && pc.signalingState === 'stable' ||
+              await pc.setRemoteDescription(data.description).catch(() => {})
         }
-        if (description.type == 'offer') {
+        if (data.description.type === 'offer') {
           await pc.setLocalDescription(await pc.createAnswer())
           // Edge didn't set the state to 'new' after calling the above :[
-          if (!trickle) await waitToCompleteIceGathering(pc, 'new')
+          if (!trickle) await waitToCompleteIceGathering(pc, eventOptions, 'new')
           send({ description: pc.localDescription })
         }
       } else if (data?.candidate) {
@@ -135,7 +141,12 @@ export default class Peer {
       }
     }
 
-    port2.onmessage = onmessage.bind(this)
-    dc.addEventListener('message', onmessage.bind(this), { ...signal })
+    port2.onmessage = onmessage
+    dc.addEventListener('message', onmessage, eventOptions)
   }
+}
+
+export default Peer
+export {
+  Peer
 }
