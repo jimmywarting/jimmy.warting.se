@@ -137,13 +137,13 @@ async function sendRequestToProxyServer(url, requestInfo) {
   const q = new URLSearchParams({
     cors: JSON.stringify({
       url,
-      headers
+      headers: requestInfo.headers
     })
   })
   
   url = 'https://adv-cors.deno.dev/?' + q
   
-  return fetch(url, { method: 'POST', body })
+  return fetch(url, { method: 'POST', body: requestInfo.body })
 }
 
 
