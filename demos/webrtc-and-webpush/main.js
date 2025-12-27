@@ -137,7 +137,9 @@ async function sendRequestToProxyServer(url, requestInfo) {
   const q = new URLSearchParams({
     cors: JSON.stringify({
       url,
-      headers: requestInfo.headers
+      headers: requestInfo.headers,
+      forwardRequestHeaders: false,
+      setRequestHeaders: [...new Headers(requestInfo.headers)]
     })
   })
   
