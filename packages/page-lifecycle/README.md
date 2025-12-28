@@ -138,7 +138,8 @@ Tab freezing is controlled by the browser (especially Chrome) to save CPU and ba
 * [How Chrome's Tab Freezing Saves CPU & Battery](https://www.thefastcode.com/en-idr/article/how-chrome-s-tab-freezing-will-save-cpu-and-battery) – article explaining Chrome's logic
 * `chrome://site-engagement/` – increase site engagement score (set to 100) to indicate frequent use
 * Installing the page as a **PWA** can help; configure the app to **allow background processes** and disable battery-saver restrictions
-
+* https://www.itechtics.com/disable-tab-throttling/
+* 
 > ⚠️ Note: These are **hints** and cannot guarantee a tab will never be frozen; browsers ultimately control freezing policies.
 
 ---
