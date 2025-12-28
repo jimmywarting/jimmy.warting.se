@@ -11,7 +11,7 @@ class PageLifecycle extends Observable {
       , subscriber)
 
       const opts = { signal: subscriber.signal, capture: true }
-      
+      genericListener({})
       ;['pageshow', 'focus', 'blur', 'visibilitychange', 'resume', 'freeze', 'pagehide'].forEach((type) => {
         globalThis.addEventListener(type, genericListener, opts)
       })
