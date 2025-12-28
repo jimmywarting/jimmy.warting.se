@@ -23,7 +23,7 @@ function waitToCompleteIceGathering(pc, eventOptions, state = pc.iceGatheringSta
  * @property {AbortSignal} signal - funkis?
  */
 
-export default class Peer {
+class Peer {
   /**
    * @param {{
    *   polite: boolean,
@@ -37,7 +37,7 @@ export default class Peer {
     let { polite = true, trickle = true } = options || {}
 
     let { port1, port2 } = new MessageChannel()
-    let send = msg => port2.postMessage(JSON.stringify(msg))
+    let send = msg => port1.postMessage(JSON.stringify(msg))
 
     const pc = new RTCPeerConnection({
       iceServers: options?.iceServers || [{
@@ -146,4 +146,9 @@ export default class Peer {
     port2.onmessage = onmessage
     dc.addEventListener('message', onmessage, eventOptions)
   }
+}
+
+export {
+  Peer as default, // Don't use default...
+  Peer 
 }
