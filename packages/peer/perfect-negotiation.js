@@ -6,13 +6,14 @@ function waitToCompleteIceGathering(pc, eventOptions, state = pc.iceGatheringSta
   const completed = Symbol('completed')
 
   pc.addEventListener('icegatheringstatechange', () => {
+    console.log(pc.iceGatheringState)
     if (pc.iceGatheringState === 'complete') {
       ctrl.abort(completed)
     }
   }, { signal: signals })
 
-  signals.addEventListener('abort', evt => {
-    evt.reason === completed ? q.resolve() : q.reject(evt.reason)
+  signals.addEventListener('abort', () => {
+    signals.reason === completed ? q.resolve() : q.reject(signals.reason)
   }, { once: true })
 
   return q.promise
@@ -37,7 +38,7 @@ class Peer {
     let { polite = true, trickle = true } = options || {}
 
     let { port1, port2 } = new MessageChannel()
-    let send = msg => port1.postMessage(JSON.stringify(msg))
+    let send = msg => port2.postMessage(JSON.stringify(msg))
 
     const pc = new RTCPeerConnection({
       iceServers: options?.iceServers || [{
@@ -84,7 +85,7 @@ class Peer {
     })
 
     pc.addEventListener('icecandidate', ({ candidate }) => {
-      trickle && send({ candidate })
+      trickle && send({ candidate: candidate?.toJSON() || candidate })
     }, eventOptions)
 
     // The rest is the polite peer negotiation logic, copied from this blog
@@ -99,7 +100,7 @@ class Peer {
         await pc.setLocalDescription(offer)
         makingOffer = false
         if (trickle) {
-          send({ description: pc.localDescription })
+          send({ description: pc.localDescription?.toJSON() })
         } else {
           await waitToCompleteIceGathering(pc, eventOptions)
           const description = pc.localDescription.toJSON()
@@ -136,7 +137,7 @@ class Peer {
           await pc.setLocalDescription(await pc.createAnswer())
           // Edge didn't set the state to 'new' after calling the above :[
           if (!trickle) await waitToCompleteIceGathering(pc, eventOptions, 'new')
-          send({ description: pc.localDescription })
+          send({ description: pc.localDescription?.toJSON() })
         }
       } else if (data?.candidate) {
         await pc.addIceCandidate(data.candidate)
@@ -148,7 +149,17 @@ class Peer {
   }
 }
 
-export {
-  Peer as default, // Don't use default...
-  Peer 
-}
+export { Peer as default, Peer }
+
+/* FOR TESTING
+const p1 = new Peer({ polite: true, trickle: false })
+const p2 = new Peer({ polite: false, trickle: false })
+
+p1.signalingPort.onmessage = e => p2.signalingPort.postMessage(e.data)
+p2.signalingPort.onmessage = e => p1.signalingPort.postMessage(e.data)
+
+await Promise.all([p1.ready, p2.ready])
+
+p1.dc.addEventListener('message', console.log)
+p2.dc.send('hej')
+*/
