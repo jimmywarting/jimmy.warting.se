@@ -23,7 +23,7 @@ function waitToCompleteIceGathering(pc, eventOptions, state = pc.iceGatheringSta
  * @property {AbortSignal} signal - funkis?
  */
 
-class Peer {
+export default class Peer {
   /**
    * @param {{
    *   polite: boolean,
@@ -49,7 +49,7 @@ class Peer {
     })
 
     const ctrl = new AbortController()
-    
+
     /** @type {any} dummy alias for AbortSignal to make TS happy */
     const eventOptions = { signal: ctrl.signal }
 
@@ -92,26 +92,28 @@ class Peer {
     let makingOffer = false, ignoreOffer = false
 
     pc.addEventListener('negotiationneeded', async () => {
-      makingOffer = true
-      const offer = await pc.createOffer()
-      if (pc.signalingState != 'stable') return
-      await pc.setLocalDescription(offer)
-      makingOffer = false
-      if (trickle) {
-        send({ description: pc.localDescription })
-      } else {
-        await waitToCompleteIceGathering(pc, eventOptions)
-        const description = pc.localDescription.toJSON()
-        description.sdp = description.sdp.replace(/a=ice-options:trickle.*\r?\n/g, '')
-        send({ description })
-      }
+      try {
+        makingOffer = true
+        const offer = await pc.createOffer()
+        if (pc.signalingState != 'stable') return
+        await pc.setLocalDescription(offer)
+        makingOffer = false
+        if (trickle) {
+          send({ description: pc.localDescription })
+        } else {
+          await waitToCompleteIceGathering(pc, eventOptions)
+          const description = pc.localDescription.toJSON()
+          description.sdp = description.sdp.replace(/a=ice-options:trickle.*\r?\n/g, '')
+          send({ description })
+        }
+      } catch (_err) {/* */}
     }, eventOptions)
 
     const onmessage = async ({ data }) => {
       if (typeof data === 'string' && (data.includes('"description"') || data.includes('"candidate"'))) {
         try { data = JSON.parse(data) } catch (_err) {/**/}
       }
-      
+
       if (data?.description) {
         const offerCollision = data.description.type == 'offer' &&
           (makingOffer || pc.signalingState != 'stable')
@@ -144,9 +146,4 @@ class Peer {
     port2.onmessage = onmessage
     dc.addEventListener('message', onmessage, eventOptions)
   }
-}
-
-export default Peer
-export {
-  Peer
 }
