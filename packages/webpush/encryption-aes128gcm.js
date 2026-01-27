@@ -13,7 +13,13 @@ const getKey = (sub, key) => {
 
 const utf8Encoder = new TextEncoder()
 
-export default class EncryptionHelperAES128GCM {
+class EncryptionHelperAES128GCM {
+  #b64ServerKeys
+  #b64Salt
+  
+  subject
+  vapidKeys
+
   /**
    * @param {{
    *   vapidKeys: { publicKey: string, privateKey: string };
@@ -23,8 +29,8 @@ export default class EncryptionHelperAES128GCM {
    * }} options
    */
   constructor (options) {
-    this._b64ServerKeys = options.serverKeys
-    this._b64Salt = options.salt
+    this.#b64ServerKeys = options.serverKeys
+    this.#b64Salt = options.salt
     this.subject = options.subject
     this.vapidKeys = {
       publicKey: helpers.base64UrlToUint8Array(options.vapidKeys.publicKey),
@@ -33,10 +39,10 @@ export default class EncryptionHelperAES128GCM {
   }
 
   getServerKeys() {
-    if (this._b64ServerKeys) {
+    if (this.#b64ServerKeys) {
       return helpers.arrayBuffersToCryptoKeys(
-        helpers.base64UrlToUint8Array(this._b64ServerKeys.publicKey),
-        helpers.base64UrlToUint8Array(this._b64ServerKeys.privateKey)
+        helpers.base64UrlToUint8Array(this.#b64ServerKeys.publicKey),
+        helpers.base64UrlToUint8Array(this.#b64ServerKeys.privateKey)
       )
     }
 
@@ -44,8 +50,8 @@ export default class EncryptionHelperAES128GCM {
   }
 
   getSalt() {
-    if (this._b64Salt) {
-      return helpers.base64UrlToUint8Array(this._b64Salt)
+    if (this.#b64Salt) {
+      return helpers.base64UrlToUint8Array(this.#b64Salt)
     }
 
     return helpers.generateSalt()
@@ -120,7 +126,7 @@ export default class EncryptionHelperAES128GCM {
     const exportedServerKeys = await helpers.cryptoKeysToUint8Array(
       serverKeys.publicKey
     )
-    const encryptionKeys = await this._generateEncryptionKeys(
+    const encryptionKeys = await this.#generateEncryptionKeys(
       subscription, salt, serverKeys
     )
 
@@ -149,7 +155,7 @@ export default class EncryptionHelperAES128GCM {
       algorithm, encryptionKeys.contentEncryptionCryptoKey,
       recordUint8Array)
 
-    const payloadWithHeaders = await this._addEncryptionContentCodingHeader(
+    const payloadWithHeaders = await this.#addEncryptionContentCodingHeader(
       encryptedPayloadArrayBuffer,
       serverKeys,
       salt)
@@ -184,7 +190,7 @@ export default class EncryptionHelperAES128GCM {
    * @param {{ publicKey: CryptoKey; }} serverKeys
    * @param {Uint8Array} salt
    */
-  async _addEncryptionContentCodingHeader(
+  async #addEncryptionContentCodingHeader(
     encryptedPayloadArrayBuffer, serverKeys, salt
   ) {
     const keys = await helpers.cryptoKeysToUint8Array(serverKeys.publicKey)
@@ -214,11 +220,11 @@ export default class EncryptionHelperAES128GCM {
    * @param {ArrayBuffer} salt
    * @param {{ publicKey: CryptoKey; }} serverKeys
    */
-  async _generateEncryptionKeys(subscription, salt, serverKeys) {
+  async #generateEncryptionKeys(subscription, salt, serverKeys) {
     const infoResults = await Promise.all([
       this._generatePRK(subscription, serverKeys),
-      this._generateCEKInfo(),
-      this._generateNonceInfo(),
+      this.#generateCEKInfo(),
+      this.#generateNonceInfo(),
     ])
 
     const prk = infoResults[0]
@@ -237,7 +243,7 @@ export default class EncryptionHelperAES128GCM {
     }
   }
 
-  _generateCEKInfo() {
+  #generateCEKInfo() {
     const contentEncoding8Array = utf8Encoder.encode('Content-Encoding: aes128gcm')
     const paddingUnit8Array = new Uint8Array(1)
     return helpers.joinUint8Arrays([
@@ -246,7 +252,7 @@ export default class EncryptionHelperAES128GCM {
     ])
   }
 
-  _generateNonceInfo() {
+  #generateNonceInfo() {
     const contentEncoding8Array = utf8Encoder.encode('Content-Encoding: nonce')
     const paddingUnit8Array = new Uint8Array(1)
     return helpers.joinUint8Arrays([
@@ -259,10 +265,10 @@ export default class EncryptionHelperAES128GCM {
    * @param {any} subscription
    * @param {any} serverKeys
    */
-  async _generatePRK(subscription, serverKeys) {
-    const sharedSecret = await this._getSharedSecret(subscription, serverKeys)
+  async #generatePRK(subscription, serverKeys) {
+    const sharedSecret = await this.#getSharedSecret(subscription, serverKeys)
 
-    const keyInfoUint8Array = await this._getKeyInfo(subscription, serverKeys)
+    const keyInfoUint8Array = await this.#getKeyInfo(subscription, serverKeys)
     const hkdf = new HKDF(
       sharedSecret,
       getKey(subscription, 'auth')
@@ -274,7 +280,7 @@ export default class EncryptionHelperAES128GCM {
    * @param {any} subscription
    * @param {{ privateKey: CryptoKey; }} serverKeys
    */
-  async _getSharedSecret(subscription, serverKeys) {
+  async #getSharedSecret(subscription, serverKeys) {
     const p256dh = getKey(subscription, 'p256dh')
     const keys = await helpers.arrayBuffersToCryptoKeys(p256dh)
 
@@ -295,7 +301,7 @@ export default class EncryptionHelperAES128GCM {
    * @param {any} subscription
    * @param {{ publicKey: CryptoKey; }} serverKeys
    */
-  async _getKeyInfo(subscription, serverKeys) {
+  async #getKeyInfo(subscription, serverKeys) {
     const keyInfo = await helpers.cryptoKeysToUint8Array(serverKeys.publicKey)
     return helpers.joinUint8Arrays([
       utf8Encoder.encode('WebPush: info'),
@@ -304,4 +310,11 @@ export default class EncryptionHelperAES128GCM {
       keyInfo.publicKey,
     ])
   }
+}
+
+/** @deprecated use named export { EncryptionHelperAES128GCM } */
+export default EncryptionHelperAES128GCM
+
+export {
+  EncryptionHelperAES128GCM
 }
