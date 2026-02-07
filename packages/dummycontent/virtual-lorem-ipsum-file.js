@@ -1,4 +1,14 @@
-/*! VirtualLoremIpsumFile. MIT License. Jimmy Wärting <https://jimmy.warting.se/opensource> */
+/*! VirtualLoremIpsumFile. MIT License. Jimmy Wärting <https://github.com/jimmywarting/jimmy.warting.se/blob/master/packages/dummycontent/virtual-lorem-ipsum-file.js> */
+
+// Helper method to fill the buffer (to avoid duplicated code)
+function fillBuffer (dest, srcData, totalToWrite) {
+  let written = 0
+  while (written < totalToWrite) {
+    const toCopy = Math.min(srcData.length, totalToWrite - written)
+    dest.set(srcData.subarray(0, toCopy), written)
+    written += toCopy
+  }
+}
 
 class VirtualLoremIpsumFile extends File {
   size = 0
@@ -8,8 +18,8 @@ class VirtualLoremIpsumFile extends File {
     this.size = size
   }
 
-  stream() {
-    const encoder = new TextEncoder();
+  stream () {
+    const encoder = new TextEncoder()
     const lorem = `
       Lorem ipsum dolor sit amet, consectetur adipiscing elit. Sed do eiusmod
       tempor incididunt ut labore et dolore magna aliqua. Ut enim ad minim
@@ -18,55 +28,45 @@ class VirtualLoremIpsumFile extends File {
       velit esse cillum dolore eu fugiat nulla pariatur. Excepteur sint
       occaecat cupidatat non proident, sunt in culpa qui officia deserunt
       mollit anim id est laborum.\n
-    `.trimStart().replace(/^[ \t]+|[ \t]+$/gm, '');
+    `.trimStart().replace(/^[ \t]+|[ \t]+$/gm, '')
 
-    const loremBytes = encoder.encode(lorem);
-    let offset = 0;
-    const size = this.size;
+    const loremBytes = encoder.encode(lorem)
+    let offset = 0
+    const size = this.size
 
     return new ReadableStream({
       type: 'bytes',
-      pull(controller) {
-        if (offset >= size) return controller.close();
+      pull (controller) {
+        if (offset >= size) return controller.close()
 
-        const remaining = size - offset;
-        
-        // --- LOGIK FÖR ATT STÖDJA BÅDA MODES ---
+        const remaining = size - offset
+
+        // --- LOGIC TO SUPPORT BOTH MODES ---
         if (controller.byobRequest) {
-          // BYOB Mode: Använd konsumentens befintliga view
-          const view = controller.byobRequest.view;
-          const writeSize = Math.min(view.byteLength, remaining);
-          
-          this._fillBuffer(view, loremBytes, writeSize);
-          
-          offset += writeSize;
-          controller.byobRequest.respond(writeSize);
+          // BYOB Mode: Use the consumer's existing view
+          const view = controller.byobRequest.view
+          const writeSize = Math.min(view.byteLength, remaining)
+
+          fillBuffer(view, loremBytes, writeSize)
+
+          offset += writeSize
+          controller.byobRequest.respond(writeSize)
         } else {
-          // Standard Mode: Vi skapar en egen buffer (t.ex. 64KB eller vad som behövs)
-          const CHUNK_SIZE = 65536; 
-          const writeSize = Math.min(CHUNK_SIZE, remaining);
-          const buffer = new Uint8Array(writeSize);
-          
-          this._fillBuffer(buffer, loremBytes, writeSize);
-          
-          offset += writeSize;
-          controller.enqueue(buffer);
+          // Default Mode: Create our own buffer (e.g., 64KB)
+          const CHUNK_SIZE = 65536
+          const writeSize = Math.min(CHUNK_SIZE, remaining)
+          const buffer = new Uint8Array(writeSize)
+
+          fillBuffer(buffer, loremBytes, writeSize)
+
+          offset += writeSize
+          controller.enqueue(buffer)
         }
         // ---------------------------------------
 
-        if (offset >= size) controller.close();
-      },
-      
-      // Hjälpmetod för att fylla buffern (för att undvika duplicerad kod)
-      _fillBuffer(dest, srcData, totalToWrite) {
-        let written = 0;
-        while (written < totalToWrite) {
-          const toCopy = Math.min(srcData.length, totalToWrite - written);
-          dest.set(srcData.subarray(0, toCopy), written);
-          written += toCopy;
-        }
+        if (offset >= size) controller.close()
       }
-    });
+    })
   }
 
   async bytes () {
@@ -100,5 +100,5 @@ class VirtualLoremIpsumFile extends File {
 }
 
 export {
-  VirtualLoremIpsumFile 
+  VirtualLoremIpsumFile
 }
