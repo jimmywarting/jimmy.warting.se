@@ -1,5 +1,6 @@
+/*! AnalogClock. MIT License. Jimmy Wärting <https://jimmy.warting.se/opensource> */
 
-export class AnalogClock {
+class AnalogClock {
   /**
    * @param {number} [size]
    * @param {AbortSignal} [signal]
@@ -89,4 +90,8 @@ function drawHand(ctx, pos, length, width) {
   ctx.lineTo(0, -length)
   ctx.stroke()
   ctx.rotate(-pos)
+}
+
+export {
+  AnalogClock
 }
