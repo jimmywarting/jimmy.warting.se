@@ -141,7 +141,7 @@ export default class EncryptionHelperAESGCM {
    */
   async _generateEncryptionKeys(subscription, salt, serverKeys) {
     const results = await Promise.all([
-      this._generatePRK(subscription, serverKeys),
+      this.#generatePRK(subscription, serverKeys),
       this._generateCEKInfo(subscription, serverKeys),
       this._generateNonceInfo(subscription, serverKeys),
     ])
@@ -244,7 +244,7 @@ export default class EncryptionHelperAESGCM {
    * @param {any} subscription
    * @param {any} serverKeys
    */
-  async _generatePRK(subscription, serverKeys) {
+  async #generatePRK(subscription, serverKeys) {
     const sharedSecret = await this._getSharedSecret(subscription, serverKeys)
     const utf8Encoder = new TextEncoder()
     const authInfoUint8Array = utf8Encoder.encode('Content-Encoding: auth\0')
