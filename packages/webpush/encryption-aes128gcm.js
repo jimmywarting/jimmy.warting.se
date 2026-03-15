@@ -222,7 +222,7 @@ class EncryptionHelperAES128GCM {
    */
   async #generateEncryptionKeys(subscription, salt, serverKeys) {
     const infoResults = await Promise.all([
-      this._generatePRK(subscription, serverKeys),
+      this.#generatePRK(subscription, serverKeys),
       this.#generateCEKInfo(),
       this.#generateNonceInfo(),
     ])
