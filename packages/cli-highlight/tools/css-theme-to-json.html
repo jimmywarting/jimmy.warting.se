@@ -1,0 +1,219 @@
+<!doctype html>
+<html lang="en">
+    <head>
+        <meta charset="utf-8">
+        <meta name="viewport" content="width=device-width, initial-scale=1">
+        <title>highlight.js CSS theme to JSON</title>
+        <style>
+            body {
+                box-sizing: border-box;
+                font: 14px/1.4 system-ui, sans-serif;
+                margin: 0;
+                padding: 24px;
+            }
+
+            label,
+            button {
+                display: block;
+                margin-block: 12px;
+            }
+
+            input,
+            textarea {
+                box-sizing: border-box;
+                font: inherit;
+                width: min(900px, 100%);
+            }
+
+            textarea {
+                font-family: ui-monospace, SFMono-Regular, Menlo, Consolas, monospace;
+                min-height: 360px;
+            }
+
+            #sandbox {
+                left: -9999px;
+                position: fixed;
+                top: 0;
+                visibility: hidden;
+            }
+        </style>
+    </head>
+    <body>
+        <h1>highlight.js CSS theme to JSON</h1>
+
+        <label>
+            CSS module URL
+            <input id="css-url" value="https://cdn.jsdelivr.net/npm/highlight.js@11.11.1/styles/atom-one-dark.css">
+        </label>
+
+        <label>
+            Or paste CSS
+            <textarea id="css-source" placeholder="Paste CSS here instead of importing a CSS module"></textarea>
+        </label>
+
+        <button id="convert" type="button">Convert</button>
+        <textarea id="output" spellcheck="false" readonly></textarea>
+        <div id="sandbox" aria-hidden="true"></div>
+
+        <script type="module">
+            const TOKENS = [
+                'default',
+                'keyword',
+                'built_in',
+                'type',
+                'literal',
+                'number',
+                'regexp',
+                'string',
+                'subst',
+                'symbol',
+                'class',
+                'function',
+                'title',
+                'params',
+                'comment',
+                'doctag',
+                'meta',
+                'meta-keyword',
+                'meta-string',
+                'section',
+                'tag',
+                'name',
+                'builtin-name',
+                'attr',
+                'attribute',
+                'variable',
+                'bullet',
+                'code',
+                'emphasis',
+                'strong',
+                'formula',
+                'link',
+                'quote',
+                'selector-tag',
+                'selector-id',
+                'selector-class',
+                'selector-attr',
+                'selector-pseudo',
+                'template-tag',
+                'template-variable',
+                'addition',
+                'deletion',
+            ]
+
+            const sandbox = document.querySelector('#sandbox')
+            const cssUrl = document.querySelector('#css-url')
+            const cssSource = document.querySelector('#css-source')
+            const output = document.querySelector('#output')
+            const convert = document.querySelector('#convert')
+
+            /** @type {CSSStyleSheet | undefined} */
+            let currentSheet
+
+            convert.addEventListener('click', async () => {
+                try {
+                    currentSheet = cssSource.value.trim()
+                        ? sheetFromText(cssSource.value)
+                        : await sheetFromModule(cssUrl.value.trim())
+
+                    document.adoptedStyleSheets = [...document.adoptedStyleSheets.filter(sheet => sheet !== currentSheet), currentSheet]
+                    output.value = JSON.stringify(readTheme(), null, 2)
+                } catch (error) {
+                    output.value = error && error.stack ? error.stack : String(error)
+                }
+            })
+
+            /**
+             * @param {string} specifier
+             * @returns {Promise<CSSStyleSheet>}
+             */
+            async function sheetFromModule(specifier) {
+                const module = await import(specifier, { with: { type: 'css' } })
+                return module.default
+            }
+
+            /**
+             * @param {string} source
+             * @returns {CSSStyleSheet}
+             */
+            function sheetFromText(source) {
+                const sheet = new CSSStyleSheet()
+                sheet.replaceSync(source)
+                return sheet
+            }
+
+            /**
+             * @returns {Record<string, object>}
+             */
+            function readTheme() {
+                sandbox.textContent = ''
+
+                const baseline = computedFor('', false)
+                const defaultStyle = computedFor('', true)
+                /** @type {Record<string, object>} */
+                const theme = {
+                    default: diffStyle(defaultStyle, baseline),
+                }
+
+                for (const token of TOKENS) {
+                    if (token === 'default') {
+                        continue
+                    }
+
+                    const diff = diffStyle(computedFor(token, true), defaultStyle)
+                    if (Object.keys(diff).length > 0) {
+                        theme[token] = diff
+                    }
+                }
+
+                return theme
+            }
+
+            /**
+             * @param {string} token
+             * @param {boolean} highlighted
+             * @returns {CSSStyleDeclaration}
+             */
+            function computedFor(token, highlighted) {
+                const code = document.createElement('code')
+                code.className = highlighted ? 'hljs' : ''
+
+                const span = document.createElement('span')
+                span.className = token ? `hljs-${token}` : ''
+                span.textContent = 'sample'
+
+                code.append(span)
+                sandbox.append(code)
+                return getComputedStyle(span)
+            }
+
+            /**
+             * @param {CSSStyleDeclaration} style
+             * @param {CSSStyleDeclaration} baseline
+             * @returns {Record<string, string>}
+             */
+            function diffStyle(style, baseline) {
+                const result = {}
+                assignIfChanged(result, 'color', style.color, baseline.color)
+                assignIfChanged(result, 'backgroundColor', style.backgroundColor, baseline.backgroundColor)
+                assignIfChanged(result, 'fontWeight', style.fontWeight, baseline.fontWeight)
+                assignIfChanged(result, 'fontStyle', style.fontStyle, baseline.fontStyle)
+                assignIfChanged(result, 'textDecorationLine', style.textDecorationLine, baseline.textDecorationLine)
+                return result
+            }
+
+            /**
+             * @param {Record<string, string>} target
+             * @param {string} key
+             * @param {string} value
+             * @param {string} baseline
+             * @returns {void}
+             */
+            function assignIfChanged(target, key, value, baseline) {
+                if (value && value !== baseline && value !== 'none' && value !== 'normal') {
+                    target[key] = value
+                }
+            }
+        </script>
+    </body>
+</html>
