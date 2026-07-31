@@ -25,8 +25,8 @@ async function cors(url, init = {}, extra = {}) {
       ...extra
     })
   })
-  
-  url = 'https://adv-cors.deno.dev/?' + q
+
+  url = 'https://cors.jimmywarting.deno.net/?' + q
   
   const response = await fetch(url, init)
 
