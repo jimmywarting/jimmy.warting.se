@@ -1,5 +1,5 @@
-import HKDF from './hkdf.js'
-import helpers from './helpers.js'
+import { HKDF } from './hkdf.js'
+import * as helpers from './helpers.js'
 
 /**
  * @param {{ getKey: (arg0: any) => any; keys: { [x: string]: string; }; }} sub

@@ -1,4 +1,4 @@
-import helpers from './helpers.js'
+import * as helpers from './helpers.js'
 
 const b64 = helpers.uint8ArrayToBase64Url
 

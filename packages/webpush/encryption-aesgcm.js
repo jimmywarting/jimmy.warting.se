@@ -1,5 +1,5 @@
 import HKDF from './hkdf.js'
-import helpers from './helpers.js'
+import * as helpers from './helpers.js'
 
 /**
  * @param {*} sub
