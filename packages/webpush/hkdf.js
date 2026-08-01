@@ -1,4 +1,4 @@
-import HMAC from './hmac.js'
+import { HMAC } from './hmac.js'
 
 class HKDF {
   #ikm
