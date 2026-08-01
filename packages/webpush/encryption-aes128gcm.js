@@ -75,8 +75,8 @@ class EncryptionHelperAES128GCM {
       endpoint = endpoint.replace('fcm/send', 'wp')
     }
 
-    /** @type {{default: import('./vapid-helper-2.js').default }} */
-    const { createVapidAuthHeader } = await import(true
+    /** @type {{createVapidAuthHeader: import('./vapid-helper-2.js').createVapidAuthHeader }} */
+    const { createVapidAuthHeader } = await import(useV2
       ? './vapid-helper-2.js'
       : './vapid-helper-1.js'
     )
