@@ -1,4 +1,4 @@
-import HKDF from './hkdf.js'
+import { HKDF } from './hkdf.js'
 import * as helpers from './helpers.js'
 
 /**
