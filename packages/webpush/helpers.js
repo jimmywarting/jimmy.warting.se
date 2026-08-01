@@ -3,7 +3,7 @@
  * @param {number} [start]
  * @param {number} [end]
  */
-function uint8ArrayToBase64Url(uint8Array, start, end) {
+function uint8ArrayToBase64Url (uint8Array, start, end) {
   start = start || 0
   end = end || uint8Array.byteLength
 
@@ -20,7 +20,7 @@ function uint8ArrayToBase64Url(uint8Array, start, end) {
  *
  * @param {string} base64UrlData
  */
-function base64UrlToUint8Array(base64UrlData) {
+function base64UrlToUint8Array (base64UrlData) {
   const padding = '='.repeat((4 - base64UrlData.length % 4) % 4)
   const base64 = (base64UrlData + padding)
     .replace(/-/g, '+')
@@ -56,7 +56,7 @@ function joinUint8Arrays (arrays) {
  * @param {ArrayBuffer} publicKey
  * @param {Uint8Array} [privateKey]
  */
-async function arrayBuffersToCryptoKeys(publicKey, privateKey) {
+async function arrayBuffersToCryptoKeys (publicKey, privateKey) {
   // Length, in bytes, of a P-256 field element. Expected format of the private
   // key.
   const PRIVATE_KEY_BYTES = 32
@@ -145,7 +145,7 @@ function generateSalt() {
   return crypto.getRandomValues(new Uint8Array(16))
 }
 
-export default {
+export {
   uint8ArrayToBase64Url,
   base64UrlToUint8Array,
   joinUint8Arrays,

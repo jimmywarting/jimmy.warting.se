@@ -1,16 +1,16 @@
 import HMAC from './hmac.js'
 
-export default class HKDF {
-  _ikm
-  _hmac
+class HKDF {
+  #ikm
+  #hmac
 
   /**
    * @param {ArrayBuffer} ikm
    * @param {ArrayBuffer} salt
    */
   constructor (ikm, salt) {
-    this._ikm = ikm
-    this._hmac = new HMAC(salt)
+    this.#ikm = ikm
+    this.#hmac = new HMAC(salt)
   }
 
   /**
@@ -22,9 +22,13 @@ export default class HKDF {
     fullInfoBuffer.set(info, 0)
     fullInfoBuffer.set(new Uint8Array([1]), info.byteLength)
 
-    const prk = await this._hmac.sign(this._ikm)
+    const prk = await this.#hmac.sign(this.#ikm)
     const nextHmac = new HMAC(prk)
     const nextPrk = await nextHmac.sign(fullInfoBuffer)
     return nextPrk.slice(0, byteLength)
   }
+}
+
+export {
+  HKDF
 }

@@ -11,7 +11,7 @@ const getKey = (sub, key) => {
     : sub.getKey(key)
 }
 
-export default class EncryptionHelperAESGCM {
+class EncryptionHelperAESGCM {
   constructor (options) {
     this.b64ServerKeys = options.serverKeys
     this.b64Salt = options.salt
@@ -273,4 +273,8 @@ export default class EncryptionHelperAESGCM {
 
     return crypto.subtle.deriveBits(algorithm, serverKeys.privateKey, 256)
   }
+}
+
+export {
+  EncryptionHelperAESGCM
 }

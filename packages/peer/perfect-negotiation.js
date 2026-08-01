@@ -149,7 +149,9 @@ class Peer {
   }
 }
 
-export { Peer as default, Peer }
+export {
+  Peer
+}
 
 /* FOR TESTING
 const p1 = new Peer({ polite: true, trickle: false })

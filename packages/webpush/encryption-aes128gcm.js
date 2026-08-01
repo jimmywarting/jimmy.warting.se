@@ -16,7 +16,7 @@ const utf8Encoder = new TextEncoder()
 class EncryptionHelperAES128GCM {
   #b64ServerKeys
   #b64Salt
-  
+
   subject
   vapidKeys
 
@@ -76,7 +76,7 @@ class EncryptionHelperAES128GCM {
     }
 
     /** @type {{default: import('./vapid-helper-2.js').default }} */
-    const { default: createVapidAuthHeader } = await import(useV2
+    const { createVapidAuthHeader } = await import(true
       ? './vapid-helper-2.js'
       : './vapid-helper-1.js'
     )
@@ -311,9 +311,6 @@ class EncryptionHelperAES128GCM {
     ])
   }
 }
-
-/** @deprecated use named export { EncryptionHelperAES128GCM } */
-export default EncryptionHelperAES128GCM
 
 export {
   EncryptionHelperAES128GCM

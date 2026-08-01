@@ -11,7 +11,7 @@ const compress = (bodyInit, method = 'deflate') =>
  * @param {BodyInit} bodyInit - can be a string, ArrayBuffer, TypedArray, Blob, or ReadableStream
  * @param {string} method - compression method, e.g., 'deflate' or 'gzip'
  */
-const decompress = (bodyInit, method = 'deflate') => 
+const decompress = (bodyInit, method = 'deflate') =>
   new Response(new Response(bodyInit).body.pipeThrough(new DecompressionStream(method)))
 
 export {

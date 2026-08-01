@@ -8,7 +8,7 @@ const b64 = helpers.uint8ArrayToBase64Url
  * @param {string} subject
  * @param {number} [exp]
  */
-export default async function createVapidAuthHeader (
+async function createVapidAuthHeader (
   vapidKeys, audience, subject, exp
 ) {
   if (!audience) {
@@ -76,4 +76,8 @@ export default async function createVapidAuthHeader (
   return {
     Authorization: `vapid t=${jsonWebToken}, k=${p256ecdsa}`,
   }
+}
+
+export {
+  createVapidAuthHeader
 }
