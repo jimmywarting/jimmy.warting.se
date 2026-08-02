@@ -9,7 +9,7 @@ const ALGORITHM = { name: 'ECDSA', namedCurve: 'P-256' }
  *
  * @returns {Promise<{ publicKey: string, privateKey: string }>}
  */
-export async function generate () {
+async function generateApplicationServerKeys () {
   const { publicKey, privateKey } = await crypto.subtle.generateKey(
     ALGORITHM,
     true,
@@ -30,4 +30,8 @@ export async function generate () {
     // 32-byte private scalar (`d`) from the EC JWK
     privateKey: privateKeyJwk.d
   }
+}
+
+export {
+  generateApplicationServerKeys
 }
