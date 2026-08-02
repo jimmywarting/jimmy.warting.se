@@ -1,0 +1,55 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="referrer" content="no-referrer">
+
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta name="color-scheme" content="dark light">
+  <link rel="stylesheet" href="./style.css">
+
+  <title>Web Push demo</title>
+</head>
+<body>
+  <h1>Web Push demo</h1>
+  <p id="status">Checking browser support&hellip;</p>
+
+  <fieldset>
+    <legend>1. VAPID application server keys</legend>
+    <p>Generated once and persisted in <code>localStorage</code> so they can be reused across requests.</p>
+    <div class="row">
+      <button id="regenerate-keys">Regenerate</button>
+    </div>
+    <div class="row">
+      <textarea id="keys" rows="5" spellcheck="off" placeholder="application keys"></textarea>
+    </div>
+  </fieldset>
+
+  <fieldset>
+    <legend>2. Subscription</legend>
+    <div class="row">
+      <button id="subscribe">Request permission &amp; subscribe</button>
+      <button id="unsubscribe" disabled>Unsubscribe</button>
+    </div>
+    <textarea id="subscription" rows="9" spellcheck="off" placeholder="Not subscribed yet"></textarea>
+  </fieldset>
+
+  <fieldset>
+    <legend>3. Send a push message</legend>
+    <div class="row">
+      <input id="admin-contact" placeholder="admin contact (mailto: or https:)" value="mailto:hello@example.com">
+    </div>
+    <div class="row">
+      <input id="payload" placeholder="message payload" value="Hello from the webpush demo!">
+      <button id="send" disabled>Send push</button>
+    </div>
+  </fieldset>
+
+  <fieldset>
+    <legend>Log</legend>
+    <textarea id="log"></textarea>
+  </fieldset>
+
+  <script type="module" src="./main.js"></script>
+</body>
+</html>

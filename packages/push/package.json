@@ -1,0 +1,15 @@
+{
+  "name": "webpush",
+  "description": "A JS module for sending Web Push notifications",
+  "authors": "Jimmy Warting <jimmy@warting.se>",
+  "version": "1.0.0",
+  "main": "src/index.js",
+  "type": "module",
+  "scripts": {
+    "demo": "node demo/server.js",
+    "test": "playwright test"
+  },
+  "devDependencies": {
+    "@playwright/test": "^1.62.1"
+  }
+}

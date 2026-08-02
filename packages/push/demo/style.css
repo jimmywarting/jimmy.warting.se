@@ -1,0 +1,48 @@
+body {
+  font-family: system-ui, sans-serif;
+  max-width: 640px;
+  margin: 2rem auto;
+  padding: 0 1rem;
+  line-height: 1.5;
+}
+fieldset {
+  margin-block: 1rem;
+  border-radius: 8px;
+}
+button {
+  padding: 0.5rem 1rem;
+  cursor: pointer;
+}
+button:disabled {
+  cursor: not-allowed;
+  opacity: 0.5;
+}
+textarea, input {
+  width: 100%;
+  box-sizing: border-box;
+  font-family: ui-monospace, monospace;
+  font-size: 0.85rem;
+}
+textarea {
+  white-space: nowrap;
+}
+#log {
+  white-space: pre-wrap;
+  background: canvastext;
+  color: canvas;
+  padding: 0.75rem;
+  border-radius: 8px;
+  max-height: 240px;
+  overflow-y: auto;
+  font-family: ui-monospace, monospace;
+  font-size: 0.8rem;
+}
+.row {
+  display: flex;
+  gap: 0.5rem;
+  align-items: center;
+  margin-block: 0.5rem;
+}
+.row > * {
+  flex: 1;
+}
