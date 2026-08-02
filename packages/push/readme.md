@@ -1,4 +1,4 @@
-# webpush
+# push
 
 A dependency-free JS module for sending [Web Push](https://developer.mozilla.org/en-US/docs/Web/API/Push_API)
 notifications, built entirely on standard Web APIs:
@@ -21,6 +21,7 @@ and equally well in a Node.js (or Deno/Bun) backend, since both expose Web Crypt
 ## Usage
 
 ```js
+import * as push from 'https://jimmy.warting.se/packages/push/src/index.js'
 import { generateApplicationServerKeys, generatePushHTTPRequest } from './src/index.js'
 
 // Generate once, persist the returned JSON, and reuse across requests.
