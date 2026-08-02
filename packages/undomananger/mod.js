@@ -30,5 +30,6 @@ class UndoManager {
   }
 }
 
-export default UndoManager
-export { UndoManager }
+export { 
+  UndoManager 
+}
